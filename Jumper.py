@@ -13,19 +13,36 @@ def Jumper():
 
 
     pygame.init()
-    screen = pygame.display.set_mode([800,800])
+    SCREEN_WIDTH = 800
+    SCREEN_HEIGHT = 600
+    screen = pygame.display.set_mode((SCREEN_WIDTH,SCREEN_HEIGHT))
     running = True
     while(running):
         for event in pygame.event.get():
-            if event.type == pygame.QUIT:
+            if event.type == KEYDOWN:
+                if event.type == K_ESCAPE:
+                    running = False
+            elif event.type == QUIT:
                 running = False
 
 
         screen.fill([255,255,255])
 
-        pygame.draw.circle(screen,(0,0,255),(400,400),25)
+        surf = pygame.Surface((50,50))
 
-        pygame.display.flip();
-    pygame.quit();
+        surf_center = (
+            (SCREEN_WIDTH-surf.get_width())/2,
+            (SCREEN_HEIGHT-surf.get_height())/2
+            )
+
+        surf.fill((0,0,0))
+
+        rect = surf.get_rect()
+
+        screen.blit(surf,surf_center)
+        pygame.display.flip()
+
+        pygame.display.flip()
+    pygame.quit()
 
 Jumper()
