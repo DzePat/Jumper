@@ -1,5 +1,6 @@
 import pygame
 
+import random
 
 
 from pygame.locals import (
@@ -11,9 +12,10 @@ from pygame.locals import (
         KEYDOWN,
         QUIT,
     )
+clock = pygame.time.Clock()
 # Define constants for the screen width and height
-SCREEN_WIDTH = 800
-SCREEN_HEIGHT = 600
+SCREEN_WIDTH = 400
+SCREEN_HEIGHT = 800
 # Initialize pygame
 pygame.init()
 pressed_keys = pygame.key.get_pressed()
@@ -30,7 +32,7 @@ class Player(pygame.sprite.Sprite):
         self.rect = self.surf.get_rect()
     def update(self, pressed_keys):
         if pressed_keys[K_UP]:
-            self.rect.move_ip(0, -5)
+            self.rect.move_ip(0, -20)
         if pressed_keys[K_DOWN]:
             self.rect.move_ip(0, 5)
         if pressed_keys[K_LEFT]:
@@ -47,11 +49,38 @@ class Player(pygame.sprite.Sprite):
         if self.rect.bottom >= SCREEN_HEIGHT:
             self.rect.bottom = SCREEN_HEIGHT
 
+class Enemy(pygame.sprite.Sprite):
+    def __init__(self):
+        super(Enemy, self).__init__()
+        self.surf = pygame.Surface((50, 10))
+        self.surf.fill((255, 255, 255))
+        self.rect = self.surf.get_rect(
+            center=(
+                random.randint(0, SCREEN_WIDTH),
+                random.randint(SCREEN_HEIGHT+20, SCREEN_HEIGHT+100),
+            )
+        )
+        self.speed = random.randint(1, 8)
+    def update(self):
+        self.rect.move_ip(0, -self.speed)
+        if self.rect.top < 0:
+            self.kill()
 
 def Jumper():
 
+    # Create a custom event for adding a new enemy
+    ADDENEMY = pygame.USEREVENT + 1
+    pygame.time.set_timer(ADDENEMY, 500)
+
     # Instantiate player. Right now, this is just a rectangle.
     player = Player()
+
+    # Create groups to hold enemy sprites and all sprites
+    # - enemies is used for collision detection and position updates
+    # - all_sprites is used for rendering
+    enemies = pygame.sprite.Group()
+    all_sprites = pygame.sprite.Group()
+    all_sprites.add(player)
 
     # Variable to keep the main loop running
     running = True
@@ -61,20 +90,35 @@ def Jumper():
             if event.type == KEYDOWN:
                 if event.type == K_ESCAPE:
                     running = False
+            
             elif event.type == QUIT:
                 running = False
-        player.rect.move_ip(0,1)
-        # Get all the keys currently pressed
+      
+            elif event.type == ADDENEMY:
+            # Create the new enemy and add it to sprite groups
+                new_enemy = Enemy()
+                enemies.add(new_enemy)
+                all_sprites.add(new_enemy)
+
+            # adds downward movment on the player so it acts like a gravity
+        player.rect.move_ip(0,10)
+            # Get all the keys currently pressed
         pressed_keys = pygame.key.get_pressed()
 
-         # Update the player sprite based on user keypresses
+        # Update the player sprite based on user keypresses
         player.update(pressed_keys)
+        
+        enemies.update()
 
         screen.fill([0,0,0])
 
+        # Draw all sprites
+        for entity in all_sprites:
+            screen.blit(entity.surf, entity.rect)
+
         screen.blit(player.surf, player.rect)
         pygame.display.flip()
-
+        clock.tick(30)
     pygame.quit()
 
 Jumper()
