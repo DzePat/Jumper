@@ -2,7 +2,6 @@ import pygame
 
 import random
 
-
 from pygame.locals import (
         K_UP,
         K_DOWN,
@@ -30,9 +29,12 @@ class Player(pygame.sprite.Sprite):
         self.surf = pygame.Surface((25, 25))
         self.surf.fill((255, 255, 255))
         self.rect = self.surf.get_rect()
+        self.jump = int(5)
     def update(self, pressed_keys):
         if pressed_keys[K_UP]:
-            self.rect.move_ip(0, -20)
+            if(self.jump != 0):
+                self.rect.move_ip(0, -40)
+                self.jump -= 1
         if pressed_keys[K_DOWN]:
             self.rect.move_ip(0, 5)
         if pressed_keys[K_LEFT]:
@@ -123,6 +125,7 @@ def Jumper():
 
         # checks if  the player has colided with the platform sprite     
         if pygame.sprite.spritecollideany(player,enemies):
+            player.jump = 5
             collision = pygame.sprite.spritecollideany(player,enemies)
             player.rect.y = collision.rect[1]-20
             player.rect.move_ip(0,-collision.speed)
