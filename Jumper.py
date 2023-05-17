@@ -2,7 +2,6 @@ import pygame
 
 import random
 
-
 from pygame.locals import (
         K_UP,
         K_DOWN,
@@ -30,9 +29,12 @@ class Player(pygame.sprite.Sprite):
         self.surf = pygame.Surface((25, 25))
         self.surf.fill((255, 255, 255))
         self.rect = self.surf.get_rect()
+        self.jump = int(5)
     def update(self, pressed_keys):
         if pressed_keys[K_UP]:
-            self.rect.move_ip(0, -20)
+            if(self.jump != 0):
+                self.rect.move_ip(0, -40)
+                self.jump -= 1
         if pressed_keys[K_DOWN]:
             self.rect.move_ip(0, 5)
         if pressed_keys[K_LEFT]:
@@ -47,11 +49,11 @@ class Player(pygame.sprite.Sprite):
         if self.rect.top <= 0:
             self.rect.top = 0
         if self.rect.bottom >= SCREEN_HEIGHT:
-            self.rect.bottom = SCREEN_HEIGHT
+            self.kill()
 
-class Enemy(pygame.sprite.Sprite):
+class Platform(pygame.sprite.Sprite):
     def __init__(self):
-        super(Enemy, self).__init__()
+        super(Platform, self).__init__()
         self.surf = pygame.Surface((50, 10))
         self.surf.fill((255, 255, 255))
         self.rect = self.surf.get_rect(
@@ -61,10 +63,16 @@ class Enemy(pygame.sprite.Sprite):
             )
         )
         self.speed = random.randint(1, 8)
+
+        if self.rect.left < 0:
+            self.rect.left = 0
+        if self.rect.right > SCREEN_WIDTH:
+            self.rect.right = SCREEN_WIDTH
     def update(self):
         self.rect.move_ip(0, -self.speed)
         if self.rect.top < 0:
             self.kill()
+
 
 def Jumper():
 
@@ -96,14 +104,26 @@ def Jumper():
       
             elif event.type == ADDENEMY:
             # Create the new enemy and add it to sprite groups
-                new_enemy = Enemy()
+                new_enemy = Platform()
                 enemies.add(new_enemy)
                 all_sprites.add(new_enemy)
 
             # adds downward movment on the player so it acts like a gravity
-        player.rect.move_ip(0,10)
+        
             # Get all the keys currently pressed
         pressed_keys = pygame.key.get_pressed()
+        # checks if  the player has colided with the platform sprite     
+        if pygame.sprite.spritecollideany(player,enemies):
+            collision = pygame.sprite.spritecollideany(player,enemies)
+            if(collision.rect[1] < player.rect.y):
+                player.jump = 0
+                
+            elif(collision.rect[1] > player.rect.y):
+                player.jump = 5
+                player.rect.y = collision.rect[1]-20
+                player.rect.move_ip(0,-collision.speed)
+        else:
+            player.rect.move_ip(0,10)
 
         # Update the player sprite based on user keypresses
         player.update(pressed_keys)
@@ -115,6 +135,10 @@ def Jumper():
         # Draw all sprites
         for entity in all_sprites:
             screen.blit(entity.surf, entity.rect)
+
+        if(player.rect.y > SCREEN_HEIGHT):
+            player.kill()
+            running = False
 
         screen.blit(player.surf, player.rect)
         pygame.display.flip()
