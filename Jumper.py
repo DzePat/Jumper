@@ -87,11 +87,14 @@ class Platform(pygame.sprite.Sprite):
         if self.rect.top < 0:
             self.kill()
 
+
 class Bird(pygame.sprite.Sprite):
     def __init__(self):
         super(Bird, self).__init__()
+
         self.surf = pygame.image.load(bird_images[0]).convert()
         self.surf.set_colorkey((255, 255, 255), RLEACCEL)
+        self.surf = pygame.transform.scale(self.surf,(40,40))
         self.image_index = 0
         self.rect = self.surf.get_rect(
             center=(
@@ -108,6 +111,7 @@ class Bird(pygame.sprite.Sprite):
             index = int(self.image_index/10)
             self.surf = pygame.image.load(bird_images[index]).convert()
             self.surf.set_colorkey((255, 255, 255), RLEACCEL)
+            self.surf = pygame.transform.scale(self.surf,(40,40))
         self.rect.move_ip(self.speed, 0)
         if self.rect.right > SCREEN_WIDTH:
             self.kill()
@@ -223,7 +227,7 @@ def Jumper():
             collision1 = pygame.sprite.spritecollideany(player,enemies)
             collx = abs(player.rect.x - collision1.rect.x)
             colly = abs(player.rect.y - collision1.rect.y)
-            if(collx < 5 or colly <5):
+            if(collx < 4 or colly <4):
                 player.kill()
                 running = False
             else:
