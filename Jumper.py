@@ -49,7 +49,7 @@ class Player(pygame.sprite.Sprite):
         if self.rect.top <= 0:
             self.rect.top = 0
         if self.rect.bottom >= SCREEN_HEIGHT:
-            self.rect.bottom = SCREEN_HEIGHT
+            self.kill()
 
 class Platform(pygame.sprite.Sprite):
     def __init__(self):
@@ -72,6 +72,7 @@ class Platform(pygame.sprite.Sprite):
         self.rect.move_ip(0, -self.speed)
         if self.rect.top < 0:
             self.kill()
+
 
 def Jumper():
 
@@ -111,6 +112,18 @@ def Jumper():
         
             # Get all the keys currently pressed
         pressed_keys = pygame.key.get_pressed()
+        # checks if  the player has colided with the platform sprite     
+        if pygame.sprite.spritecollideany(player,enemies):
+            collision = pygame.sprite.spritecollideany(player,enemies)
+            if(collision.rect[1] < player.rect.y):
+                player.jump = 0
+                
+            elif(collision.rect[1] > player.rect.y):
+                player.jump = 5
+                player.rect.y = collision.rect[1]-20
+                player.rect.move_ip(0,-collision.speed)
+        else:
+            player.rect.move_ip(0,10)
 
         # Update the player sprite based on user keypresses
         player.update(pressed_keys)
@@ -123,16 +136,9 @@ def Jumper():
         for entity in all_sprites:
             screen.blit(entity.surf, entity.rect)
 
-        # checks if  the player has colided with the platform sprite     
-        if pygame.sprite.spritecollideany(player,enemies):
-            player.jump = 5
-            collision = pygame.sprite.spritecollideany(player,enemies)
-            player.rect.y = collision.rect[1]-20
-            player.rect.move_ip(0,-collision.speed)
-        else:
-            player.rect.move_ip(0,10)
-
-
+        if(player.rect.y > SCREEN_HEIGHT):
+            player.kill()
+            running = False
 
         screen.blit(player.surf, player.rect)
         pygame.display.flip()
