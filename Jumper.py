@@ -112,14 +112,35 @@ class Bird(pygame.sprite.Sprite):
         if self.rect.right > SCREEN_WIDTH:
             self.kill()
 
+class Cloud(pygame.sprite.Sprite):
+    def __init__(self):
+        super(Cloud, self).__init__()
+        self.surf = pygame.image.load("cloud.png").convert()
+        self.surf.set_colorkey((0, 0, 0), RLEACCEL)
+        # The starting position is randomly generated
+        self.rect = self.surf.get_rect(
+            center=(
+                random.randint(0, SCREEN_WIDTH-50),
+                random.randint(0, 1),
+            )
+        )
+
+    # Move the cloud based on a constant speed
+    # Remove the cloud when it passes the left edge of the screen
+    def update(self):
+        self.rect.move_ip(0, 1)
+        if self.rect.top > SCREEN_HEIGHT:
+            self.kill()
+
 def Jumper():
 
-    # Create a custom event for adding a new platform
-    ADDPLATFORM = pygame.USEREVENT + 1
+    # Create a custom event for adding a new platform, enemy or a cloud
+    ADDPLATFORM = pygame.USEREVENT + 2
     pygame.time.set_timer(ADDPLATFORM, 1200)
-    #create a custom event for adding a new enemy
-    ADDENEMIES = pygame.USEREVENT +2
+    ADDENEMIES = pygame.USEREVENT + 3
     pygame.time.set_timer(ADDENEMIES, 2000)
+    ADDCLOUD = pygame.USEREVENT + 1
+    pygame.time.set_timer(ADDCLOUD, 4000)
 
 
     #initiating first platform
@@ -139,7 +160,7 @@ def Jumper():
     all_sprites.add(player)
     platforms.add(firstplatform)
     all_sprites.add(firstplatform)
-    
+    clouds = pygame.sprite.Group()
     enemies = pygame.sprite.Group()
 
 
@@ -166,6 +187,12 @@ def Jumper():
                 new_enemy = Bird()
                 enemies.add(new_enemy)
                 all_sprites.add(new_enemy)
+            # Add a new cloud?
+            elif event.type == ADDCLOUD:
+                # Create the new cloud and add it to sprite groups
+                new_cloud = Cloud()
+                clouds.add(new_cloud)
+                all_sprites.add(new_cloud)
 
             
         
@@ -175,6 +202,7 @@ def Jumper():
         platforms.update()
         
         enemies.update()
+        clouds.update()
 
         # checks if  the player has colided with the platform sprite     
         if pygame.sprite.spritecollideany(player,platforms):
