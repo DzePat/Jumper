@@ -119,7 +119,7 @@ def Jumper():
     pygame.time.set_timer(ADDPLATFORM, 1200)
     #create a custom event for adding a new enemy
     ADDENEMIES = pygame.USEREVENT +2
-    pygame.time.set_timer(ADDENEMIES, 1500)
+    pygame.time.set_timer(ADDENEMIES, 2000)
 
 
     #initiating first platform
@@ -131,9 +131,6 @@ def Jumper():
     player.rect.x = 200 - 10
     player.rect.y = 680 - 50
 
-    #initiate a bird
-    bird = Bird()
-
     # Create groups to hold enemy sprites and all sprites
     # - enemies is used for collision detection and position updates
     # - all_sprites is used for rendering
@@ -142,7 +139,6 @@ def Jumper():
     all_sprites.add(player)
     platforms.add(firstplatform)
     all_sprites.add(firstplatform)
-    all_sprites.add(bird)
     
     enemies = pygame.sprite.Group()
 
@@ -170,7 +166,6 @@ def Jumper():
                 new_enemy = Bird()
                 enemies.add(new_enemy)
                 all_sprites.add(new_enemy)
-                print("was here")
 
             
         
@@ -180,8 +175,6 @@ def Jumper():
         platforms.update()
         
         enemies.update()
-
-        bird.update()
 
         # checks if  the player has colided with the platform sprite     
         if pygame.sprite.spritecollideany(player,platforms):
@@ -196,7 +189,17 @@ def Jumper():
         else:
             # adds downward movment on the player so it acts like a gravity
             player.rect.move_ip(0,4)
-
+        
+        # checks collision with the birds 
+        if pygame.sprite.spritecollideany(player,enemies):
+            collision1 = pygame.sprite.spritecollideany(player,enemies)
+            collx = abs(player.rect.x - collision1.rect.x)
+            colly = abs(player.rect.y - collision1.rect.y)
+            if(collx < 5 or colly <5):
+                player.kill()
+                running = False
+            else:
+                continue
         # Update the player sprite based on user keypresses
         player.update(pressed_keys)
 
