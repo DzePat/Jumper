@@ -29,11 +29,11 @@ class Player(pygame.sprite.Sprite):
         self.surf = pygame.Surface((25, 25))
         self.surf.fill((255, 255, 255))
         self.rect = self.surf.get_rect()
-        self.jump = int(5)
+        self.jump = 0
     def update(self, pressed_keys):
         if pressed_keys[K_UP]:
             if(self.jump != 0):
-                self.rect.move_ip(0, -40)
+                self.rect.move_ip(0, -9)
                 self.jump -= 1
         if pressed_keys[K_DOWN]:
             self.rect.move_ip(0, 5)
@@ -54,7 +54,7 @@ class Player(pygame.sprite.Sprite):
 class Platform(pygame.sprite.Sprite):
     def __init__(self):
         super(Platform, self).__init__()
-        self.surf = pygame.Surface((50, 10))
+        self.surf = pygame.Surface((50, 20))
         self.surf.fill((255, 255, 255))
         self.rect = self.surf.get_rect(
             center=(
@@ -62,7 +62,7 @@ class Platform(pygame.sprite.Sprite):
                 random.randint(SCREEN_HEIGHT+20, SCREEN_HEIGHT+100),
             )
         )
-        self.speed = random.randint(1, 8)
+        self.speed = random.randint(1, 3)
 
         if self.rect.left < 0:
             self.rect.left = 0
@@ -78,10 +78,16 @@ def Jumper():
 
     # Create a custom event for adding a new enemy
     ADDENEMY = pygame.USEREVENT + 1
-    pygame.time.set_timer(ADDENEMY, 500)
+    pygame.time.set_timer(ADDENEMY, 1000)
 
+    #initiating first platform
+    firstplatform = Platform()
+    firstplatform.rect.x = 200-25
+    firstplatform.rect.y = 700-25
     # Instantiate player. Right now, this is just a rectangle.
     player = Player()
+    player.rect.x = 200 - 10
+    player.rect.y = 680 - 50
 
     # Create groups to hold enemy sprites and all sprites
     # - enemies is used for collision detection and position updates
@@ -89,6 +95,9 @@ def Jumper():
     enemies = pygame.sprite.Group()
     all_sprites = pygame.sprite.Group()
     all_sprites.add(player)
+    enemies.add(firstplatform)
+    all_sprites.add(firstplatform)
+    
 
     # Variable to keep the main loop running
     running = True
@@ -112,6 +121,9 @@ def Jumper():
         
             # Get all the keys currently pressed
         pressed_keys = pygame.key.get_pressed()
+
+        enemies.update()
+
         # checks if  the player has colided with the platform sprite     
         if pygame.sprite.spritecollideany(player,enemies):
             collision = pygame.sprite.spritecollideany(player,enemies)
@@ -119,16 +131,14 @@ def Jumper():
                 player.jump = 0
                 
             elif(collision.rect[1] > player.rect.y):
-                player.jump = 5
+                player.jump = 40
                 player.rect.y = collision.rect[1]-20
                 player.rect.move_ip(0,-collision.speed)
         else:
-            player.rect.move_ip(0,10)
+            player.rect.move_ip(0,4)
 
         # Update the player sprite based on user keypresses
         player.update(pressed_keys)
-        
-        enemies.update()
 
         screen.fill([0,0,0])
 
@@ -142,7 +152,7 @@ def Jumper():
 
         screen.blit(player.surf, player.rect)
         pygame.display.flip()
-        clock.tick(30)
+        clock.tick(60)
     pygame.quit()
 
 Jumper()
