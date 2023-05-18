@@ -321,6 +321,8 @@ def GameMenu():
             screen.blit(Title,(0,200))
             Space = pygame.image.load("Space.jpg").convert()
             screen.blit(Space,(50,380))
+            Space = pygame.image.load("TitleCat.png").convert()
+            screen.blit(Space,(40,600))
         for event in pygame.event.get():
             if event.type == KEYDOWN:
                 if event.key == K_ESCAPE:
