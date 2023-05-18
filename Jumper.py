@@ -37,6 +37,7 @@ song_list = [
     "song3.mp3",
     "song4.mp3"
     ]
+Coll_Sound = pygame.mixer.Sound("Collision.mp3")
 # list of bird file names
 bird_images = ["bird1.png",
                "bird2.png",
@@ -55,17 +56,17 @@ def song(time):
         pygame.mixer.music.load(currentsong)
         pygame.mixer.music.set_volume(0.01)
         pygame.mixer.music.play(loops=-1)
-    elif(time == 121):
+    elif(time == 61):
         currentsong = song_list[2]
         pygame.mixer.music.load(currentsong)
         pygame.mixer.music.set_volume(0.01)
         pygame.mixer.music.play(loops=-1)
-    elif(time == 241):
+    elif(time == 121):
         currentsong = song_list[3]
         pygame.mixer.music.load(currentsong)
         pygame.mixer.music.set_volume(0.01)
         pygame.mixer.music.play(loops=-1)
-    elif(time ==361):
+    elif(time ==181):
         currentsong = song_list[4]
         pygame.mixer.music.load(currentsong)
         pygame.mixer.music.set_volume(0.01)
@@ -269,6 +270,8 @@ def Jumper():
             colly = abs(player.rect.y - collision1.rect.y)
             if(collx < 3 or colly <3):
                 player.kill()
+                Coll_Sound.play()
+                Coll_Sound.set_volume(0.03)
                 running = False
             else:
                 continue
@@ -277,7 +280,7 @@ def Jumper():
         # Update the player sprite based on user keypresses
         player.update(pressed_keys)
 
-        screen.fill([52,235,186])
+        screen.fill([52,155,235])
 
         for cloud in clouds:
             screen.blit(cloud.surf,cloud.rect)
@@ -313,7 +316,7 @@ def GameMenu():
         screen.fill([0,0,0])
         if(playing == False):
             pygame.mixer.music.load("TitleSong.mp3")
-            pygame.mixer.music.set_volume(0.01)
+            pygame.mixer.music.set_volume(0.03)
             pygame.mixer.music.play(loops=-1)
             playing == True
         if start == True:
