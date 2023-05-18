@@ -259,9 +259,12 @@ def GameMenu():
     Alive = True
     start = True
     while Exit:
-        screen.fill([52,235,186])
+        screen.fill([0,0,0])
         if start == True:
-            draw_text("Press Space To Start",font,(25,100,30),80,400)
+            Title = pygame.image.load("Title.png").convert()
+            screen.blit(Title,(0,200))
+            Space = pygame.image.load("Space.jpg").convert()
+            screen.blit(Space,(50,380))
         for event in pygame.event.get():
             if event.type == KEYDOWN:
                 if event.key == K_ESCAPE:
@@ -273,10 +276,10 @@ def GameMenu():
                         Alive = False
                 
         if Alive == False:
-            draw_text("Game Over",font,Text_color,80,400)
-            draw_text("Press Space to start again",font,Text_color,80,420)
+            Game_Over = pygame.image.load("Game_Over.png").convert()
+            screen.blit(Game_Over,(150,200))
+            draw_text("Press Space to start again",font,(255,0,0),50,250)
         pygame.display.flip()
     pygame.quit()
 GameMenu()
 
-#Jumper()
