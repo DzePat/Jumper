@@ -1,29 +1,33 @@
-import pygame
-
-import random
+import pygame,random, time
 
 from pygame.locals import (
-        RLEACCEL,
-        K_UP,
-        K_DOWN,
-        K_LEFT,
-        K_RIGHT,
-        K_ESCAPE,
-        KEYDOWN,
-        QUIT,
-    )
+    K_SPACE,RLEACCEL,K_UP,K_DOWN,K_LEFT,K_RIGHT,K_ESCAPE,KEYDOWN,QUIT)
+
+
 clock = pygame.time.Clock()
+
 # Define constants for the screen width and height
 SCREEN_WIDTH = 400
+
 SCREEN_HEIGHT = 800
+
 # Initialize pygame
 pygame.init()
 pressed_keys = pygame.key.get_pressed()
-# Create the screen object
+
 # The size is determined by the constant SCREEN_WIDTH and SCREEN_HEIGHT
 screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
 pygame.display.set_caption("Jumper")
 
+#font color,style and size
+font = pygame.font.SysFont("arialblack",20)
+Text_color = (0,0,0)
+#renders a text on to the screen 
+def draw_text(text,font,text_col,x,y):
+    img = font.render(text,True,text_col)
+    screen.blit(img,(x,y))
+
+# list of bird file names
 bird_images = ["bird1.png",
                "bird2.png",
                "bird3.png",
@@ -137,7 +141,6 @@ class Cloud(pygame.sprite.Sprite):
             self.kill()
 
 def Jumper():
-
     # Create a custom event for adding a new platform, enemy or a cloud
     ADDPLATFORM = pygame.USEREVENT + 2
     pygame.time.set_timer(ADDPLATFORM, 1200)
@@ -170,13 +173,12 @@ def Jumper():
 
     # Variable to keep the main loop running
     running = True
-
+    start = time.time()
     while(running):
         for event in pygame.event.get():
             if event.type == KEYDOWN:
-                if event.type == K_ESCAPE:
+                if event.key == K_ESCAPE:
                     running = False
-            
             elif event.type == QUIT:
                 running = False
       
@@ -197,10 +199,8 @@ def Jumper():
                 new_cloud = Cloud()
                 clouds.add(new_cloud)
                 all_sprites.add(new_cloud)
-
-            
         
-            # Get all the keys currently pressed
+        # Get all the keys currently pressed
         pressed_keys = pygame.key.get_pressed()
         # moves all platforms up once depeneding on the speed of the platform
         platforms.update()
@@ -245,12 +245,38 @@ def Jumper():
         if(player.rect.y > SCREEN_HEIGHT):
             player.kill()
             running = False
-
+        draw_text(str(int(time.time()-start)),font,Text_color,350,0)
         pygame.display.flip()
         clock.tick(60)
+    start = time.time()
+
+
+
+
+
+def GameMenu():
+    Exit = True
+    Alive = True
+    start = True
+    while Exit:
+        screen.fill([52,235,186])
+        if start == True:
+            draw_text("Press Space To Start",font,(25,100,30),80,400)
+        for event in pygame.event.get():
+            if event.type == KEYDOWN:
+                if event.key == K_ESCAPE:
+                    Exit = False
+                elif event.key == K_SPACE:
+                        Alive = True
+                        start = False
+                        Jumper()
+                        Alive = False
+                
+        if Alive == False:
+            draw_text("Game Over",font,Text_color,80,400)
+            draw_text("Press Space to start again",font,Text_color,80,420)
+        pygame.display.flip()
     pygame.quit()
+GameMenu()
 
-
-
-
-Jumper()
+#Jumper()
