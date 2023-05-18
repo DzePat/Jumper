@@ -1,3 +1,4 @@
+from tkinter import CURRENT
 import pygame,random, time
 
 from pygame.locals import (
@@ -11,6 +12,8 @@ SCREEN_WIDTH = 400
 
 SCREEN_HEIGHT = 800
 
+#initialize mixer for sounds
+pygame.mixer.init()
 # Initialize pygame
 pygame.init()
 pressed_keys = pygame.key.get_pressed()
@@ -27,6 +30,13 @@ def draw_text(text,font,text_col,x,y):
     img = font.render(text,True,text_col)
     screen.blit(img,(x,y))
 
+#list of songs
+song_list = [
+    "song1.mp3",
+    "song2.mp3",
+    "song3.mp3",
+    "song4.mp3"
+    ]
 # list of bird file names
 bird_images = ["bird1.png",
                "bird2.png",
@@ -38,6 +48,29 @@ bird_images = ["bird1.png",
                "bird8.png",
                "bird9.png"]
 
+def song(time):
+    currentsong = ""
+    if(time == 1):
+        currentsong = song_list[1]
+        pygame.mixer.music.load(currentsong)
+        pygame.mixer.music.set_volume(0.01)
+        pygame.mixer.music.play(loops=-1)
+    elif(time == 121):
+        currentsong = song_list[2]
+        pygame.mixer.music.load(currentsong)
+        pygame.mixer.music.set_volume(0.01)
+        pygame.mixer.music.play(loops=-1)
+    elif(time == 241):
+        currentsong = song_list[3]
+        pygame.mixer.music.load(currentsong)
+        pygame.mixer.music.set_volume(0.01)
+        pygame.mixer.music.play(loops=-1)
+    elif(time ==361):
+        currentsong = song_list[4]
+        pygame.mixer.music.load(currentsong)
+        pygame.mixer.music.set_volume(0.01)
+        pygame.mixer.music.play(loops=-1)
+
 
 # Define a player object by extending pygame.sprite.Sprite
 class Player(pygame.sprite.Sprite):
@@ -45,8 +78,10 @@ class Player(pygame.sprite.Sprite):
         super(Player, self).__init__()
         self.surf = pygame.image.load("cat.png").convert()
         self.surf.set_colorkey((255, 255, 255), RLEACCEL)
+        self.surf = pygame.transform.scale(self.surf,(50,50))
         self.rect = self.surf.get_rect()
         self.jump = 0
+        self.center = (self.rect.x + 50/2, self.rect.y + 50/2)
     def update(self, pressed_keys):
         if pressed_keys[K_UP]:
             if(self.jump != 0):
@@ -106,6 +141,7 @@ class Bird(pygame.sprite.Sprite):
                 random.randint(0, SCREEN_HEIGHT),
             )
         )
+        self.center = (self.rect.x + 20/2, self.rect.y + 20/2)
         self.speed = random.randint(1, 2)
     def update(self):
         self.image_index += 1
@@ -170,7 +206,7 @@ def Jumper():
     clouds = pygame.sprite.Group()
     enemies = pygame.sprite.Group()
 
-
+    previoustime = 0
     # Variable to keep the main loop running
     running = True
     start = time.time()
@@ -198,8 +234,12 @@ def Jumper():
                 # Create the new cloud and add it to sprite groups
                 new_cloud = Cloud()
                 clouds.add(new_cloud)
-                all_sprites.add(new_cloud)
+                #all_sprites.add(new_cloud)
         
+        currenttime = int(time.time()-start)
+        if(currenttime != previoustime):
+            previoustime = currenttime
+            song(currenttime)
         # Get all the keys currently pressed
         pressed_keys = pygame.key.get_pressed()
         # moves all platforms up once depeneding on the speed of the platform
@@ -227,15 +267,20 @@ def Jumper():
             collision1 = pygame.sprite.spritecollideany(player,enemies)
             collx = abs(player.rect.x - collision1.rect.x)
             colly = abs(player.rect.y - collision1.rect.y)
-            if(collx < 4 or colly <4):
+            if(collx < 3 or colly <3):
                 player.kill()
                 running = False
             else:
                 continue
+
+                
         # Update the player sprite based on user keypresses
         player.update(pressed_keys)
 
         screen.fill([52,235,186])
+
+        for cloud in clouds:
+            screen.blit(cloud.surf,cloud.rect)
 
         # Draw all sprites
         for entity in all_sprites:
@@ -245,10 +290,12 @@ def Jumper():
         if(player.rect.y > SCREEN_HEIGHT):
             player.kill()
             running = False
-        draw_text(str(int(time.time()-start)),font,Text_color,350,0)
+        draw_text(str(currenttime),font,Text_color,350,0)
         pygame.display.flip()
         clock.tick(60)
     start = time.time()
+    pygame.mixer.music.stop()
+
 
 
 
@@ -258,8 +305,17 @@ def GameMenu():
     Exit = True
     Alive = True
     start = True
+    playing = True
+    pygame.mixer.music.load("TitleSong.mp3")
+    pygame.mixer.music.set_volume(0.05)
+    pygame.mixer.music.play(loops=-1)
     while Exit:
         screen.fill([0,0,0])
+        if(playing == False):
+            pygame.mixer.music.load("TitleSong.mp3")
+            pygame.mixer.music.set_volume(0.01)
+            pygame.mixer.music.play(loops=-1)
+            playing == True
         if start == True:
             Title = pygame.image.load("Title.png").convert()
             screen.blit(Title,(0,200))
@@ -270,6 +326,8 @@ def GameMenu():
                 if event.key == K_ESCAPE:
                     Exit = False
                 elif event.key == K_SPACE:
+                        playing = False
+                        pygame.mixer.music.stop()
                         Alive = True
                         start = False
                         Jumper()
