@@ -16,11 +16,11 @@ clock = pygame.time.Clock()
 
 # Define constants for the screen width and height
 SCREEN_WIDTH = 500
-
 SCREEN_HEIGHT = 800
 
 #initialize mixer for sounds
 pygame.mixer.init()
+
 # Initialize pygame
 pygame.init()
 pressed_keys = pygame.key.get_pressed()
@@ -32,6 +32,7 @@ pygame.display.set_caption("Jumper")
 #font color,style and size
 font = pygame.font.SysFont("arialblack",20)
 Text_color = (0,0,0)
+
 #renders a text on to the screen 
 def draw_text(text,font,text_col,x,y):
     img = font.render(text,True,text_col)
@@ -56,6 +57,7 @@ bird_images = ["bird1.png",
                "bird8.png",
                "bird9.png"]
 
+#mixer to play the songs depending on how long player has survived
 def song(time,player):
     currentsong = ""
     if(time == 1):
@@ -197,7 +199,7 @@ def Jumper():
     player.rect.x = 225
     player.rect.y = 630
 
-    # Create groups to hold enemy sprites and all sprites
+    # Create groups to hold enemy sprites,cloud sprites,platform sprites and all sprites
     # - enemies is used for collision detection and position updates
     # - all_sprites is used for rendering
     platforms = pygame.sprite.Group()
@@ -233,10 +235,9 @@ def Jumper():
                 all_sprites.add(new_enemy)
             # Add a new cloud?
             elif event.type == ADDCLOUD:
-                # Create the new cloud and add it to sprite groups
+                # Create the new cloud and add it to  cloud sprite groups
                 new_cloud = Cloud()
                 clouds.add(new_cloud)
-                #all_sprites.add(new_cloud)
 
         currenttime = int(time.time()-start)
         if(currenttime != previoustime):
@@ -246,11 +247,11 @@ def Jumper():
         pressed_keys = pygame.key.get_pressed()
         # moves all platforms up once depeneding on the speed of the platform
         platforms.update()
-        
         enemies.update()
         clouds.update()
 
-        # checks if  the player has colided with the platform sprite     
+        # checks if  the player has colided with the platform sprite   
+        # else adds downward movment on the player so it acts like a gravity  
         if pygame.sprite.spritecollideany(player,platforms):
             collision = pygame.sprite.spritecollideany(player,platforms)
             if(collision.rect[1] < player.rect.y):
@@ -261,7 +262,6 @@ def Jumper():
                 player.rect.y = collision.rect[1]-50
                 player.rect.move_ip(0,-collision.speed)
         else:
-            # adds downward movment on the player so it acts like a gravity
             player.rect.move_ip(0,4)
         
         # checks collision with the birds 
@@ -303,7 +303,7 @@ def Jumper():
 
 
 
-
+#Main Menu that starts up first
 def GameMenu():
     Exit = True
     Alive = True
@@ -344,5 +344,7 @@ def GameMenu():
             draw_text("Press Space to start again",font,(255,0,0),100,250)
         pygame.display.flip()
     pygame.quit()
+
+
 GameMenu()
 
