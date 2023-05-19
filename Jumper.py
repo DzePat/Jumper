@@ -113,7 +113,7 @@ class Platform(pygame.sprite.Sprite):
     def __init__(self):
         super(Platform, self).__init__()
         self.surf = pygame.image.load("Flat.jpg").convert()
-        self.surf.set_colorkey((255, 255, 255), RLEACCEL)
+        self.surf.set_colorkey((0, 0, 0), RLEACCEL)
         self.rect = self.surf.get_rect(
             center=(
                 random.randint(0, SCREEN_WIDTH),
@@ -137,7 +137,7 @@ class Bird(pygame.sprite.Sprite):
         super(Bird, self).__init__()
 
         self.surf = pygame.image.load(bird_images[0]).convert()
-        self.surf.set_colorkey((255, 255, 255), RLEACCEL)
+        self.surf.set_colorkey((0, 0, 0), RLEACCEL)
         self.surf = pygame.transform.scale(self.surf,(40,40))
         self.image_index = 0
         self.rect = self.surf.get_rect(
@@ -155,7 +155,7 @@ class Bird(pygame.sprite.Sprite):
         if self.image_index%10 == 0:
             index = int(self.image_index/10)
             self.surf = pygame.image.load(bird_images[index]).convert()
-            self.surf.set_colorkey((255, 255, 255), RLEACCEL)
+            self.surf.set_colorkey((0, 0, 0), RLEACCEL)
             self.surf = pygame.transform.scale(self.surf,(40,40))
         self.rect.move_ip(self.speed, 0)
         if self.rect.right > SCREEN_WIDTH:
@@ -325,6 +325,8 @@ def GameMenu():
             Space = pygame.image.load("Space.jpg").convert()
             screen.blit(Space,(100,380))
             Space = pygame.image.load("TitleCat.png").convert()
+            screen.blit(Space,(90,600))
+            Space = pygame.image.load("bird9.png").convert()
             screen.blit(Space,(90,600))
         for event in pygame.event.get():
             if event.type == KEYDOWN:
