@@ -40,12 +40,12 @@ def draw_text(text,font,text_col,x,y):
 
 #list of songs
 song_list = [
-    "song1.mp3",
-    "song2.mp3",
-    "song3.mp3",
-    "song4.mp3"
+    "SoundTrack/song1.mp3",
+    "SoundTrack/song2.mp3",
+    "SoundTrack/song3.mp3",
+    "SoundTrack/song4.mp3"
     ]
-Coll_Sound = pygame.mixer.Sound("Collision.mp3")
+Coll_Sound = pygame.mixer.Sound("SoundTrack/Collision.mp3")
 # list of bird file names
 bird_images = ["Images/bird1.png",
                "Images/bird2.png",
@@ -92,7 +92,7 @@ def song(time,player):
 class Player(pygame.sprite.Sprite):
     def __init__(self):
         super(Player, self).__init__()
-        self.surf = pygame.image.load("Catsit.png").convert()
+        self.surf = pygame.image.load("Images/Catsit.png").convert()
         self.surf.set_colorkey((0,0,0), RLEACCEL)
         self.rect = self.surf.get_rect()
         self.jump = 0
@@ -128,7 +128,7 @@ class Player(pygame.sprite.Sprite):
 class Platform(pygame.sprite.Sprite):
     def __init__(self):
         super(Platform, self).__init__()
-        self.surf = pygame.image.load("Flat.jpg").convert()
+        self.surf = pygame.image.load("Images/Flat.jpg").convert()
         self.surf.set_colorkey((0, 0, 0), RLEACCEL)
         self.surf = pygame.transform.scale(self.surf,(50,20))
         self.rect = self.surf.get_rect(
@@ -181,7 +181,7 @@ class Bird(pygame.sprite.Sprite):
 class Cloud(pygame.sprite.Sprite):
     def __init__(self):
         super(Cloud, self).__init__()
-        self.surf = pygame.image.load("cloud.png").convert()
+        self.surf = pygame.image.load("Images/cloud.png").convert()
         self.surf.set_colorkey((0, 0, 0), RLEACCEL)
         # The starting position is randomly generated
         self.rect = self.surf.get_rect(
@@ -330,13 +330,13 @@ def GameMenu():
     start = True
     playing = True
     partycounter = 0
-    pygame.mixer.music.load("TitleSong.mp3")
+    pygame.mixer.music.load("SoundTrack/TitleSong.mp3")
     pygame.mixer.music.set_volume(0.05)
     pygame.mixer.music.play(loops=-1)
     while Exit:
         screen.fill([0,0,0])
         if(playing == False):
-            pygame.mixer.music.load("TitleSong.mp3")
+            pygame.mixer.music.load("SoundTrack/TitleSong.mp3")
             pygame.mixer.music.set_volume(0.03)
             pygame.mixer.music.play(loops=-1)
             playing == True
@@ -344,15 +344,15 @@ def GameMenu():
             partycounter +=1
             if partycounter >= 90:
                 partycounter = 0
-            Title = pygame.image.load("Title.png").convert()
+            Title = pygame.image.load("Images/Title.png").convert()
             screen.blit(Title,(50,200))
             Party = pygame.image.load(party_images[int(partycounter/10)]).convert()
             Party.set_colorkey((0, 0, 0), RLEACCEL)
             Party = pygame.transform.scale(Party,(100,100))
             screen.blit(Party,(240,190))
-            Space = pygame.image.load("Space.jpg").convert()
+            Space = pygame.image.load("Images/Space.jpg").convert()
             screen.blit(Space,(100,380))
-            Space = pygame.image.load("TitleCat.png").convert()
+            Space = pygame.image.load("Images/TitleCat.png").convert()
             screen.blit(Space,(90,600))
         for event in pygame.event.get():
             if event.type == KEYDOWN:
@@ -367,7 +367,7 @@ def GameMenu():
                         Alive = False
                 
         if Alive == False:
-            Game_Over = pygame.image.load("Game_Over.png").convert()
+            Game_Over = pygame.image.load("Images/Game_Over.png").convert()
             screen.blit(Game_Over,(200,200))
             draw_text("Press Space to start again",font,(255,0,0),100,250)
         pygame.display.flip()
