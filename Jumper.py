@@ -2,18 +2,25 @@ from tkinter import CURRENT
 import pygame,random, time
 
 from pygame.locals import (
-    K_SPACE,RLEACCEL,K_UP,K_DOWN,K_LEFT,K_RIGHT,K_ESCAPE,KEYDOWN,QUIT)
-
-
+        RLEACCEL,
+        K_SPACE,
+        K_UP,
+        K_DOWN,
+        K_LEFT,
+        K_RIGHT,
+        K_ESCAPE,
+        KEYDOWN,
+        QUIT,
+    )
 clock = pygame.time.Clock()
 
 # Define constants for the screen width and height
-SCREEN_WIDTH = 400
-
+SCREEN_WIDTH = 500
 SCREEN_HEIGHT = 800
 
 #initialize mixer for sounds
 pygame.mixer.init()
+
 # Initialize pygame
 pygame.init()
 pressed_keys = pygame.key.get_pressed()
@@ -25,6 +32,7 @@ pygame.display.set_caption("Jumper")
 #font color,style and size
 font = pygame.font.SysFont("arialblack",20)
 Text_color = (0,0,0)
+
 #renders a text on to the screen 
 def draw_text(text,font,text_col,x,y):
     img = font.render(text,True,text_col)
@@ -49,40 +57,36 @@ bird_images = ["bird1.png",
                "bird8.png",
                "bird9.png"]
 
-def song(time):
+#mixer to play the songs depending on how long player has survived
+def song(time,player):
     currentsong = ""
     if(time == 1):
-        currentsong = song_list[1]
+        currentsong = song_list[player.song]
         pygame.mixer.music.load(currentsong)
-        pygame.mixer.music.set_volume(0.01)
+        pygame.mixer.music.set_volume(0.03)
         pygame.mixer.music.play(loops=-1)
-    elif(time == 61):
-        currentsong = song_list[2]
+    elif(time%61 == 0):
+        if(player.song == 3):
+            player.song = 0
+        else:
+            player.song += 1
+        currentsong = song_list[player.song]
         pygame.mixer.music.load(currentsong)
-        pygame.mixer.music.set_volume(0.01)
+        pygame.mixer.music.set_volume(0.03)
         pygame.mixer.music.play(loops=-1)
-    elif(time == 121):
-        currentsong = song_list[3]
-        pygame.mixer.music.load(currentsong)
-        pygame.mixer.music.set_volume(0.01)
-        pygame.mixer.music.play(loops=-1)
-    elif(time ==181):
-        currentsong = song_list[4]
-        pygame.mixer.music.load(currentsong)
-        pygame.mixer.music.set_volume(0.01)
-        pygame.mixer.music.play(loops=-1)
+
 
 
 # Define a player object by extending pygame.sprite.Sprite
 class Player(pygame.sprite.Sprite):
     def __init__(self):
         super(Player, self).__init__()
-        self.surf = pygame.image.load("cat.png").convert()
-        self.surf.set_colorkey((255, 255, 255), RLEACCEL)
-        self.surf = pygame.transform.scale(self.surf,(50,50))
+        self.surf = pygame.image.load("Catsit.png").convert()
+        self.surf.set_colorkey((0,0,0), RLEACCEL)
         self.rect = self.surf.get_rect()
         self.jump = 0
         self.center = (self.rect.x + 50/2, self.rect.y + 50/2)
+        self.song = 0
     def update(self, pressed_keys):
         if pressed_keys[K_UP]:
             if(self.jump != 0):
@@ -186,17 +190,16 @@ def Jumper():
     ADDCLOUD = pygame.USEREVENT + 1
     pygame.time.set_timer(ADDCLOUD, 4000)
 
-
     #initiating first platform
     firstplatform = Platform()
-    firstplatform.rect.x = 200-25
-    firstplatform.rect.y = 700-25
+    firstplatform.rect.x = 225
+    firstplatform.rect.y = 685
     # Instantiate player. Right now, this is just a rectangle.
     player = Player()
-    player.rect.x = 200 - 10
-    player.rect.y = 680 - 50
+    player.rect.x = 225
+    player.rect.y = 630
 
-    # Create groups to hold enemy sprites and all sprites
+    # Create groups to hold enemy sprites,cloud sprites,platform sprites and all sprites
     # - enemies is used for collision detection and position updates
     # - all_sprites is used for rendering
     platforms = pygame.sprite.Group()
@@ -232,24 +235,23 @@ def Jumper():
                 all_sprites.add(new_enemy)
             # Add a new cloud?
             elif event.type == ADDCLOUD:
-                # Create the new cloud and add it to sprite groups
+                # Create the new cloud and add it to  cloud sprite groups
                 new_cloud = Cloud()
                 clouds.add(new_cloud)
-                #all_sprites.add(new_cloud)
-        
+
         currenttime = int(time.time()-start)
         if(currenttime != previoustime):
             previoustime = currenttime
-            song(currenttime)
+            song(currenttime,player)
         # Get all the keys currently pressed
         pressed_keys = pygame.key.get_pressed()
         # moves all platforms up once depeneding on the speed of the platform
         platforms.update()
-        
         enemies.update()
         clouds.update()
 
-        # checks if  the player has colided with the platform sprite     
+        # checks if  the player has colided with the platform sprite   
+        # else adds downward movment on the player so it acts like a gravity  
         if pygame.sprite.spritecollideany(player,platforms):
             collision = pygame.sprite.spritecollideany(player,platforms)
             if(collision.rect[1] < player.rect.y):
@@ -257,10 +259,9 @@ def Jumper():
                 
             elif(collision.rect[1] > player.rect.y):
                 player.jump = 40
-                player.rect.y = collision.rect[1]-45
+                player.rect.y = collision.rect[1]-50
                 player.rect.move_ip(0,-collision.speed)
         else:
-            # adds downward movment on the player so it acts like a gravity
             player.rect.move_ip(0,4)
         
         # checks collision with the birds 
@@ -279,8 +280,7 @@ def Jumper():
                 
         # Update the player sprite based on user keypresses
         player.update(pressed_keys)
-
-        screen.fill([52,155,235])
+        screen.fill([56,215,245])
 
         for cloud in clouds:
             screen.blit(cloud.surf,cloud.rect)
@@ -303,7 +303,7 @@ def Jumper():
 
 
 
-
+#Main Menu that starts up first
 def GameMenu():
     Exit = True
     Alive = True
@@ -321,11 +321,11 @@ def GameMenu():
             playing == True
         if start == True:
             Title = pygame.image.load("Title.png").convert()
-            screen.blit(Title,(0,200))
+            screen.blit(Title,(50,200))
             Space = pygame.image.load("Space.jpg").convert()
-            screen.blit(Space,(50,380))
+            screen.blit(Space,(100,380))
             Space = pygame.image.load("TitleCat.png").convert()
-            screen.blit(Space,(40,600))
+            screen.blit(Space,(90,600))
         for event in pygame.event.get():
             if event.type == KEYDOWN:
                 if event.key == K_ESCAPE:
@@ -340,9 +340,11 @@ def GameMenu():
                 
         if Alive == False:
             Game_Over = pygame.image.load("Game_Over.png").convert()
-            screen.blit(Game_Over,(150,200))
-            draw_text("Press Space to start again",font,(255,0,0),50,250)
+            screen.blit(Game_Over,(200,200))
+            draw_text("Press Space to start again",font,(255,0,0),100,250)
         pygame.display.flip()
     pygame.quit()
+
+
 GameMenu()
 
