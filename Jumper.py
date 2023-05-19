@@ -2,6 +2,8 @@ from tkinter import CURRENT
 import pygame,random, time
 
 from pygame.locals import (
+        RLEACCEL,
+        K_SPACE,
         K_UP,
         K_DOWN,
         K_LEFT,
@@ -15,7 +17,7 @@ clock = pygame.time.Clock()
 # Define constants for the screen width and height
 SCREEN_WIDTH = 400
 
-SCREEN_HEIGHT = 800
+SCREEN_HEIGHT = 980
 
 #initialize mixer for sounds
 pygame.mixer.init()
@@ -54,39 +56,35 @@ bird_images = ["bird1.png",
                "bird8.png",
                "bird9.png"]
 
-def song(time):
+def song(time,player):
     currentsong = ""
     if(time == 1):
-        currentsong = song_list[1]
+        currentsong = song_list[player.song]
         pygame.mixer.music.load(currentsong)
-        pygame.mixer.music.set_volume(0.01)
+        pygame.mixer.music.set_volume(0.03)
         pygame.mixer.music.play(loops=-1)
-    elif(time == 61):
-        currentsong = song_list[2]
+    elif(time%61 == 0):
+        if(player.song == 3):
+            player.song = 0
+        else:
+            player.song += 1
+        currentsong = song_list[player.song]
         pygame.mixer.music.load(currentsong)
-        pygame.mixer.music.set_volume(0.01)
+        pygame.mixer.music.set_volume(0.03)
         pygame.mixer.music.play(loops=-1)
-    elif(time == 121):
-        currentsong = song_list[3]
-        pygame.mixer.music.load(currentsong)
-        pygame.mixer.music.set_volume(0.01)
-        pygame.mixer.music.play(loops=-1)
-    elif(time ==181):
-        currentsong = song_list[4]
-        pygame.mixer.music.load(currentsong)
-        pygame.mixer.music.set_volume(0.01)
-        pygame.mixer.music.play(loops=-1)
+
 
 
 # Define a player object by extending pygame.sprite.Sprite
 class Player(pygame.sprite.Sprite):
     def __init__(self):
         super(Player, self).__init__()
-        self.surf = pygame.Surface((25, 25))
-        self.surf.fill((255, 255, 255))
+        self.surf = pygame.image.load("Catsit.png").convert()
+        self.surf.set_colorkey((0,0,0), RLEACCEL)
         self.rect = self.surf.get_rect()
         self.jump = 0
         self.center = (self.rect.x + 50/2, self.rect.y + 50/2)
+        self.song = 0
     def update(self, pressed_keys):
         if pressed_keys[K_UP]:
             if(self.jump != 0):
@@ -244,7 +242,7 @@ def Jumper():
         currenttime = int(time.time()-start)
         if(currenttime != previoustime):
             previoustime = currenttime
-            song(currenttime)
+            song(currenttime,player)
         # Get all the keys currently pressed
         pressed_keys = pygame.key.get_pressed()
         # moves all platforms up once depeneding on the speed of the platform
