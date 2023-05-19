@@ -87,10 +87,15 @@ class Player(pygame.sprite.Sprite):
         self.jump = 0
         self.center = (self.rect.x + 50/2, self.rect.y + 50/2)
         self.song = 0
+        self.speed = -6
     def update(self, pressed_keys):
         if pressed_keys[K_UP]:
             if(self.jump != 0):
-                self.rect.move_ip(0, -9)
+                if(self.jump%4 == 0 and self.speed > -20):
+                    self.speed -= 1
+                elif(self.speed == -19):
+                    self.speed = -9
+                self.rect.move_ip(0, self.speed)
                 self.jump -= 1
         if pressed_keys[K_DOWN]:
             self.rect.move_ip(0, 5)
@@ -114,6 +119,7 @@ class Platform(pygame.sprite.Sprite):
         super(Platform, self).__init__()
         self.surf = pygame.image.load("Flat.jpg").convert()
         self.surf.set_colorkey((0, 0, 0), RLEACCEL)
+        self.surf = pygame.transform.scale(self.surf,(50,20))
         self.rect = self.surf.get_rect(
             center=(
                 random.randint(0, SCREEN_WIDTH),
@@ -209,7 +215,7 @@ def Jumper():
     all_sprites.add(firstplatform)
     clouds = pygame.sprite.Group()
     enemies = pygame.sprite.Group()
-
+    gravity = 40
     previoustime = 0
     # Variable to keep the main loop running
     running = True
@@ -258,11 +264,14 @@ def Jumper():
                 player.jump = 0
                 
             elif(collision.rect[1] > player.rect.y):
-                player.jump = 40
+                player.jump = 20
                 player.rect.y = collision.rect[1]-50
                 player.rect.move_ip(0,-collision.speed)
+            gravity = 4
         else:
-            player.rect.move_ip(0,4)
+            if gravity < 150:
+                gravity += 1
+            player.rect.move_ip(0,int(gravity/10))
         
         # checks collision with the birds 
         if pygame.sprite.spritecollideany(player,enemies):
