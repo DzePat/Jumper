@@ -15,9 +15,9 @@ from pygame.locals import (
 clock = pygame.time.Clock()
 
 # Define constants for the screen width and height
-SCREEN_WIDTH = 400
+SCREEN_WIDTH = 500
 
-SCREEN_HEIGHT = 980
+SCREEN_HEIGHT = 800
 
 #initialize mixer for sounds
 pygame.mixer.init()
@@ -188,15 +188,14 @@ def Jumper():
     ADDCLOUD = pygame.USEREVENT + 1
     pygame.time.set_timer(ADDCLOUD, 4000)
 
-
     #initiating first platform
     firstplatform = Platform()
-    firstplatform.rect.x = 200-25
-    firstplatform.rect.y = 700-25
+    firstplatform.rect.x = 225
+    firstplatform.rect.y = 685
     # Instantiate player. Right now, this is just a rectangle.
     player = Player()
-    player.rect.x = 200 - 10
-    player.rect.y = 680 - 50
+    player.rect.x = 225
+    player.rect.y = 630
 
     # Create groups to hold enemy sprites and all sprites
     # - enemies is used for collision detection and position updates
@@ -238,7 +237,7 @@ def Jumper():
                 new_cloud = Cloud()
                 clouds.add(new_cloud)
                 #all_sprites.add(new_cloud)
-        
+
         currenttime = int(time.time()-start)
         if(currenttime != previoustime):
             previoustime = currenttime
@@ -259,7 +258,7 @@ def Jumper():
                 
             elif(collision.rect[1] > player.rect.y):
                 player.jump = 40
-                player.rect.y = collision.rect[1]-45
+                player.rect.y = collision.rect[1]-50
                 player.rect.move_ip(0,-collision.speed)
         else:
             # adds downward movment on the player so it acts like a gravity
@@ -281,7 +280,6 @@ def Jumper():
                 
         # Update the player sprite based on user keypresses
         player.update(pressed_keys)
-
         screen.fill([52,155,235])
 
         for cloud in clouds:
@@ -323,11 +321,11 @@ def GameMenu():
             playing == True
         if start == True:
             Title = pygame.image.load("Title.png").convert()
-            screen.blit(Title,(0,200))
+            screen.blit(Title,(50,200))
             Space = pygame.image.load("Space.jpg").convert()
-            screen.blit(Space,(50,380))
+            screen.blit(Space,(100,380))
             Space = pygame.image.load("TitleCat.png").convert()
-            screen.blit(Space,(40,600))
+            screen.blit(Space,(90,600))
         for event in pygame.event.get():
             if event.type == KEYDOWN:
                 if event.key == K_ESCAPE:
@@ -342,8 +340,8 @@ def GameMenu():
                 
         if Alive == False:
             Game_Over = pygame.image.load("Game_Over.png").convert()
-            screen.blit(Game_Over,(150,200))
-            draw_text("Press Space to start again",font,(255,0,0),50,250)
+            screen.blit(Game_Over,(200,200))
+            draw_text("Press Space to start again",font,(255,0,0),100,250)
         pygame.display.flip()
     pygame.quit()
 GameMenu()
