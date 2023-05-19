@@ -47,15 +47,26 @@ song_list = [
     ]
 Coll_Sound = pygame.mixer.Sound("Collision.mp3")
 # list of bird file names
-bird_images = ["bird1.png",
-               "bird2.png",
-               "bird3.png",
-               "bird4.png",
-               "bird5.png",
-               "bird6.png",
-               "bird7.png",
-               "bird8.png",
-               "bird9.png"]
+bird_images = ["Images/bird1.png",
+               "Images/bird2.png",
+               "Images/bird3.png",
+               "Images/bird4.png",
+               "Images/bird5.png",
+               "Images/bird6.png",
+               "Images/bird7.png",
+               "Images/bird8.png",
+               "Images/bird9.png"]
+party_images = [
+    "Images/party1.png",
+    "Images/party2.png",
+    "Images/party3.png",
+    "Images/party4.png",
+    "Images/party5.png",
+    "Images/party6.png",
+    "Images/party7.png",
+    "Images/party8.png",
+    "Images/party9.png",
+    ]
 
 #mixer to play the songs depending on how long player has survived
 def song(time,player):
@@ -318,6 +329,7 @@ def GameMenu():
     Alive = True
     start = True
     playing = True
+    partycounter = 0
     pygame.mixer.music.load("TitleSong.mp3")
     pygame.mixer.music.set_volume(0.05)
     pygame.mixer.music.play(loops=-1)
@@ -329,13 +341,18 @@ def GameMenu():
             pygame.mixer.music.play(loops=-1)
             playing == True
         if start == True:
+            partycounter +=1
+            if partycounter >= 90:
+                partycounter = 0
             Title = pygame.image.load("Title.png").convert()
             screen.blit(Title,(50,200))
+            Party = pygame.image.load(party_images[int(partycounter/10)]).convert()
+            Party.set_colorkey((0, 0, 0), RLEACCEL)
+            Party = pygame.transform.scale(Party,(100,100))
+            screen.blit(Party,(240,190))
             Space = pygame.image.load("Space.jpg").convert()
             screen.blit(Space,(100,380))
             Space = pygame.image.load("TitleCat.png").convert()
-            screen.blit(Space,(90,600))
-            Space = pygame.image.load("bird9.png").convert()
             screen.blit(Space,(90,600))
         for event in pygame.event.get():
             if event.type == KEYDOWN:
