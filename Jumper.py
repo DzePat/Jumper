@@ -280,7 +280,7 @@ def Jumper():
                 
         # Update the player sprite based on user keypresses
         player.update(pressed_keys)
-        screen.fill([52,155,235])
+        screen.fill([56,215,245])
 
         for cloud in clouds:
             screen.blit(cloud.surf,cloud.rect)
