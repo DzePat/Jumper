@@ -98,14 +98,14 @@ class Player(pygame.sprite.Sprite):
         self.jump = 0
         self.center = (self.rect.x + 50/2, self.rect.y + 50/2)
         self.song = 0
-        self.speed = -6
+        self.speed = -9
     def update(self, pressed_keys):
         if pressed_keys[K_UP]:
             if(self.jump != 0):
-                if(self.jump%4 == 0 and self.speed > -20):
+                if(self.jump%4 == 0 and self.speed < -19):
                     self.speed -= 1
                 elif(self.speed == -19):
-                    self.speed = -6
+                    self.speed = -9
                 self.rect.move_ip(0, self.speed)
                 self.jump -= 1
         if pressed_keys[K_DOWN]:
@@ -275,7 +275,7 @@ def Jumper():
                 player.jump = 0
                 
             elif(collision.rect[1] >= player.rect.y):
-                player.jump = 20
+                player.jump = 30
                 player.rect.y = collision.rect[1]-50
                 player.rect.move_ip(0,-collision.speed)
             gravity = 4
@@ -295,9 +295,7 @@ def Jumper():
                 Coll_Sound.set_volume(0.03)
                 running = False
             else:
-                continue
-
-        print(player.jump)     
+                continue 
         # Update the player sprite based on user keypresses
         player.update(pressed_keys)
         screen.fill([56,215,245])
