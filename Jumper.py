@@ -105,7 +105,7 @@ class Player(pygame.sprite.Sprite):
                 if(self.jump%4 == 0 and self.speed > -20):
                     self.speed -= 1
                 elif(self.speed == -19):
-                    self.speed = -9
+                    self.speed = -6
                 self.rect.move_ip(0, self.speed)
                 self.jump -= 1
         if pressed_keys[K_DOWN]:
@@ -164,7 +164,7 @@ class Bird(pygame.sprite.Sprite):
             )
         )
         self.center = (self.rect.x + 20/2, self.rect.y + 20/2)
-        self.speed = random.randint(1, 2)
+        self.speed = 2
     def update(self):
         self.image_index += 1
         if self.image_index >= 90:
@@ -274,7 +274,7 @@ def Jumper():
             if(collision.rect[1] < player.rect.y):
                 player.jump = 0
                 
-            elif(collision.rect[1] > player.rect.y):
+            elif(collision.rect[1] >= player.rect.y):
                 player.jump = 20
                 player.rect.y = collision.rect[1]-50
                 player.rect.move_ip(0,-collision.speed)
@@ -297,7 +297,7 @@ def Jumper():
             else:
                 continue
 
-                
+        print(player.jump)     
         # Update the player sprite based on user keypresses
         player.update(pressed_keys)
         screen.fill([56,215,245])
