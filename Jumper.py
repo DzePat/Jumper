@@ -27,6 +27,7 @@ pressed_keys = pygame.key.get_pressed()
 
 # The size is determined by the constant SCREEN_WIDTH and SCREEN_HEIGHT
 screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
+#set title of the pygame window
 pygame.display.set_caption("Jumper")
 
 #font color,style and size
@@ -47,15 +48,17 @@ song_list = [
     ]
 Coll_Sound = pygame.mixer.Sound("SoundTrack/Collision.mp3")
 # list of bird file names
-bird_images = ["Images/bird1.png",
-               "Images/bird2.png",
-               "Images/bird3.png",
-               "Images/bird4.png",
-               "Images/bird5.png",
-               "Images/bird6.png",
-               "Images/bird7.png",
-               "Images/bird8.png",
-               "Images/bird9.png"]
+bird_images = [
+    "Images/bird1.png",
+    "Images/bird2.png",
+    "Images/bird3.png",
+    "Images/bird4.png",
+    "Images/bird5.png",
+    "Images/bird6.png",
+    "Images/bird7.png",
+    "Images/bird8.png",
+    "Images/bird9.png"]
+#parrot file names on the title screen
 party_images = [
     "Images/party1.png",
     "Images/party2.png",
@@ -148,7 +151,7 @@ class Platform(pygame.sprite.Sprite):
         if self.rect.top < 0:
             self.kill()
 
-
+# Enemy class for bird sprites
 class Bird(pygame.sprite.Sprite):
     def __init__(self):
         super(Bird, self).__init__()
@@ -165,6 +168,7 @@ class Bird(pygame.sprite.Sprite):
         )
         self.center = (self.rect.x + 20/2, self.rect.y + 20/2)
         self.speed = 2
+    #bird position are randomly generated on the west side of the screen
     def update(self):
         self.image_index += 1
         if self.image_index >= 90:
@@ -190,9 +194,8 @@ class Cloud(pygame.sprite.Sprite):
                 random.randint(0, 1),
             )
         )
-
     # Move the cloud based on a constant speed
-    # Remove the cloud when it passes the left edge of the screen
+    # Remove the cloud when it passes the top of the screen
     def update(self):
         self.rect.move_ip(0, 1)
         if self.rect.top > SCREEN_HEIGHT:
@@ -335,9 +338,9 @@ def GameMenu():
         screen.fill([0,0,0])
         if(playing == False):
             pygame.mixer.music.load("SoundTrack/TitleSong.mp3")
-            pygame.mixer.music.set_volume(0.03)
+            pygame.mixer.music.set_volume(0.05)
             pygame.mixer.music.play(loops=-1)
-            playing == True
+            playing = True
         if start == True:
             partycounter +=1
             if partycounter >= 90:
@@ -355,7 +358,12 @@ def GameMenu():
         for event in pygame.event.get():
             if event.type == KEYDOWN:
                 if event.key == K_ESCAPE:
-                    Exit = False
+                    if start == False:
+                        start = True
+                        Alive = True
+                        playing = False
+                    else:
+                        Exit = False
                 elif event.key == K_SPACE:
                         playing = False
                         pygame.mixer.music.stop()
@@ -363,8 +371,9 @@ def GameMenu():
                         start = False
                         Jumper()
                         Alive = False
-                
+        # Game Over Screen       
         if Alive == False:
+            pygame.mixer.music.stop()
             Game_Over = pygame.image.load("Images/Game_Over.png").convert()
             screen.blit(Game_Over,(200,200))
             draw_text("Press Space to start again",font,(255,0,0),100,250)
